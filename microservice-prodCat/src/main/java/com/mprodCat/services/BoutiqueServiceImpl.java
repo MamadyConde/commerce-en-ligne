@@ -1,5 +1,6 @@
 package com.mprodCat.services;
 
+import com.mprodCat.configuration.ApplicationPropertiesConfiguration;
 import com.mprodCat.dao.CategoryDao;
 import com.mprodCat.dao.ProductDao;
 import com.mprodCat.entity.Category;
@@ -18,7 +19,8 @@ public class BoutiqueServiceImpl implements IboutiqueService {
     private ProductDao productDao;
     @Autowired
     private CategoryDao categoryDao;
-
+    @Autowired
+    private ApplicationPropertiesConfiguration appConfiguration;
 
     @Override
     public boolean addProduit(Product product) {
@@ -51,7 +53,7 @@ public class BoutiqueServiceImpl implements IboutiqueService {
     public List<Product> getAllProducts() {
         List<Product> listProducts = productDao.findAll();
         if (listProducts.isEmpty()) throw new ProductNotFoundException("Il n'existe aucun produit");
-        return listProducts;
+        return listProducts.subList(0, appConfiguration.getLimitProducts());
     }
 
     @Override
