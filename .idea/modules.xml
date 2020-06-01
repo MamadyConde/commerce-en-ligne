@@ -10,6 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/microservice-paiement/microservice-paiement.iml" filepath="$PROJECT_DIR$/microservice-paiement/microservice-paiement.iml" />
       <module fileurl="file://$PROJECT_DIR$/microservice-prodCat/microservice-prodCat.iml" filepath="$PROJECT_DIR$/microservice-prodCat/microservice-prodCat.iml" />
       <module fileurl="file://$PROJECT_DIR$/microservice-utilisateur/microservice-utilisateur.iml" filepath="$PROJECT_DIR$/microservice-utilisateur/microservice-utilisateur.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zuul-server/zuul-server.iml" filepath="$PROJECT_DIR$/zuul-server/zuul-server.iml" />
     </modules>
   </component>
 </project>

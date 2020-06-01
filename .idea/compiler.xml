@@ -13,6 +13,7 @@
         <module name="microservice-prodCat" />
         <module name="microservice-utilisateur" />
         <module name="clientui" />
+        <module name="zuul-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
