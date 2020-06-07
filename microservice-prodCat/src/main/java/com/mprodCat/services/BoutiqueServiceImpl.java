@@ -7,6 +7,8 @@ import com.mprodCat.entity.Category;
 import com.mprodCat.entity.Product;
 import com.mprodCat.exceptions.CategoryNotFoundException;
 import com.mprodCat.exceptions.ProductNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ public class BoutiqueServiceImpl implements IboutiqueService {
     private CategoryDao categoryDao;
     @Autowired
     private ApplicationPropertiesConfiguration appConfiguration;
+
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public boolean addProduit(Product product) {
@@ -53,6 +57,7 @@ public class BoutiqueServiceImpl implements IboutiqueService {
     public List<Product> getAllProducts() {
         List<Product> listProducts = productDao.findAll();
         if (listProducts.isEmpty()) throw new ProductNotFoundException("Il n'existe aucun produit");
+        log.info("Recupérer la liste des produits");
         return listProducts.subList(0, appConfiguration.getLimitProducts());
     }
 
