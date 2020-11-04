@@ -1,13 +1,17 @@
 package com.clientui.proxies;
 
 import com.clientui.beans.ProductBean;
+import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "microservice-prodCat", url = "localhost:8082")
+// avec Ribbon l'url ne sera pas en dur,
+// ribbon s'occupe de la reaprtion entre charge de l'instance du microservice, la moins chargé, à prendre
+@FeignClient(name = "microservice-prodCat")
+@RibbonClient(name = "microservice-prodCat")
 public interface MicroserviceProdCatProxy {
     @GetMapping("/products")
     List<ProductBean> listProduct();
