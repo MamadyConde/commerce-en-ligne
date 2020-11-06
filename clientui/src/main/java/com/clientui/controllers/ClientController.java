@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -94,5 +95,19 @@ public class ClientController {
         }
         cartList.get(cartList.size()-1).setListProduct(listProduct);
         return cartList;
+    }
+
+    @RequestMapping("deleteProductInCart/{idProductBean}/{idUser}")
+    @ResponseBody
+    public ResponseEntity<Void> deleteProductInCart(@PathVariable int idProductBean,@PathVariable int idUser){
+        microservicesComLigComPanierProxy.deleteProductInCart(idProductBean, idUser);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping("/updateQuantityProductInCart/{idUser}")
+    @ResponseBody
+    public ResponseEntity<CartLineBean> updateQuantityProductInCart(@RequestBody CartLineBean cartLine, @PathVariable int idUser){
+        microservicesComLigComPanierProxy.updateQuantityProductInCart(cartLine,idUser);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

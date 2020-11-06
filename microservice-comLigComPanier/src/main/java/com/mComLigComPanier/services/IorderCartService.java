@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IorderCartService {
     boolean addProductInCart(ProductBean productBean, int quantityOrder, int idUser);
-    void updateQuantityProductInCart(CartLine cartLine);
+    void updateQuantityProductInCart(CartLine cartLine, int idUser);
     void deleteProductInCart(int idProductBean, int idUser);
     List<Cart> listCartByUser(int idUser);
 

@@ -68,11 +68,11 @@ public class OrderCartController {
     @DeleteMapping("/deleteProductInCart/{idProductBean}/{idUser}")
     public ResponseEntity<Void> deleteProductInCart (@PathVariable int idProductBean,@PathVariable int idUser){
         orderCartService.deleteProductInCart(idProductBean,idUser);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
     }
-    @PutMapping("/updateQuantityProductInCart")
-    public ResponseEntity<CartLine> updateQuantityProductInCart(@RequestBody CartLine cartLine){
-        orderCartService.updateQuantityProductInCart(cartLine);
+    @PutMapping("/updateQuantityProductInCart/{idUser}")
+    public ResponseEntity<CartLine> updateQuantityProductInCart(@RequestBody CartLine cartLine, @PathVariable int idUser){
+        orderCartService.updateQuantityProductInCart(cartLine, idUser);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

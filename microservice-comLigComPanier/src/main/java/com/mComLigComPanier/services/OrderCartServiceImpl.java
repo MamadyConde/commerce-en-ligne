@@ -86,9 +86,8 @@ public class OrderCartServiceImpl implements IorderCartService {
     }
 
     @Override
-    public void updateQuantityProductInCart(CartLine cartLine) {
+    public void updateQuantityProductInCart(CartLine cartLine, int idUser) {
         int idProduct = cartLine.getIdProductBean();
-        int idUser = cartLine.getCart().getIdUser();
         List<Cart> cartList = cartDao.findByIdUser(idUser);
         if (cartList.isEmpty()) throw new CartLineNotFoundException("Le panier de l'utilisateur "+idUser+" est vide");
         for (Cart cart: cartList){
@@ -96,9 +95,25 @@ public class OrderCartServiceImpl implements IorderCartService {
                 if (line.getIdProductBean()==cartLine.getIdProductBean()){
                     Optional<CartLine> getCartLine = cartLineDao.findByCartAndIdProductBean(cart,idProduct);
                     if (!getCartLine.isPresent()) throw new CartLineNotFoundException("le panier du produit "+idProduct+" n'existe pas");
+                    ProductBean getProduct = microserviceProductProxy.getOneProduct(idProduct);
+                    int newQuantity = 0;
+                    int newQuantityProduct =0;
+                    if (getCartLine.get().getQuantity() > cartLine.getQuantity() ){
+                         newQuantity = getCartLine.get().getQuantity() - cartLine.getQuantity();
+                         newQuantityProduct = getProduct.getQuantity() + newQuantity;
+                    } else {
+                        newQuantity = cartLine.getQuantity() - getCartLine.get().getQuantity();
+                        newQuantityProduct = getProduct.getQuantity() - newQuantity;
+                    }
+                    if (newQuantityProduct<0) throw new CartLineNotFoundException("La quantité du produit "+idProduct+" est insuffisante");
+                    getProduct.setQuantity(newQuantityProduct);
                     getCartLine.get().setQuantity(cartLine.getQuantity());
                     getCartLine.get().setAmount(cartLine.getAmount());
+                    getCartLine.get().setQuantity(cartLine.getQuantity());
+
+
                     cartLineDao.save(getCartLine.get());
+                    microserviceProductProxy.updateProduct(getProduct.getId(),getProduct);
                 }
             }
         }
@@ -106,6 +121,7 @@ public class OrderCartServiceImpl implements IorderCartService {
 
     @Override
     public void deleteProductInCart(int IdProductBean, int idUser) {
+        ProductBean getProduct = microserviceProductProxy.getOneProduct(IdProductBean);
         List<Cart> cartList = cartDao.findByIdUser(idUser);
         if (cartList.isEmpty()) throw new CartLineNotFoundException("Le panier de l'utilisateur "+idUser+" est vide");
         for (Cart cart: cartList){
@@ -114,7 +130,12 @@ public class OrderCartServiceImpl implements IorderCartService {
                     Optional<CartLine> getCartLine = cartLineDao.findByCartAndIdProductBean(cart,IdProductBean);
                     if (!getCartLine.isPresent()) throw new CartLineNotFoundException("le panier du produit "+IdProductBean+" n'existe pas");
                     cartLineDao.delete(getCartLine.get());
-                    cartDao.delete(getCartLine.get().getCart());
+                    if (cart.getListCartLine().size() == 1) {
+                        cartDao.delete(getCartLine.get().getCart());
+                    }
+                    int newQuantityProduct = getProduct.getQuantity() + line.getQuantity();
+                    getProduct.setQuantity(newQuantityProduct);
+                    microserviceProductProxy.updateProduct(getProduct.getId(),getProduct);
                 }
             }
         }
