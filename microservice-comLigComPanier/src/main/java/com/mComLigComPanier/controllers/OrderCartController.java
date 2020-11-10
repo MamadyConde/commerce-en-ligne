@@ -41,16 +41,21 @@ public class OrderCartController {
     public Cart getOneCart(@PathVariable int idCart){
         return orderCartService.getOneCart(idCart);
     }*/
-   @PostMapping("/saveOrder")
-   public ResponseEntity<Void> saveOrder(@RequestBody List<Cart> cart){
-       boolean flag = orderCartService.saveOrder(cart);
+   @PostMapping("/saveOrder/{idCart}")
+   public ResponseEntity<Void> saveOrder(@PathVariable int idCart){
+       boolean flag = orderCartService.saveOrder(idCart);
        if (!flag) return new ResponseEntity<>(HttpStatus.CONFLICT);
        return new ResponseEntity<>(HttpStatus.CREATED);
    }
 
-   @GetMapping("/OrdersUser/{idUser}")
-   public List<OrderInfo> listOrderLine(@PathVariable int idUser){
+   @GetMapping("/OrdersByUser/{idUser}")
+   public List<OrderInfo> listOrderByUser(@PathVariable int idUser){
        return orderCartService.listOrderByUser(idUser);
+   }
+
+   @GetMapping("/getOneCart/{idCart}")
+   public Cart getOneCart(@PathVariable int idCart){
+       return orderCartService.getOneCart(idCart);
    }
 
     @GetMapping("/CartsUser/{idUser}")
@@ -68,11 +73,11 @@ public class OrderCartController {
     @DeleteMapping("/deleteProductInCart/{idProductBean}/{idUser}")
     public ResponseEntity<Void> deleteProductInCart (@PathVariable int idProductBean,@PathVariable int idUser){
         orderCartService.deleteProductInCart(idProductBean,idUser);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
     }
-    @PutMapping("/updateQuantityProductInCart")
-    public ResponseEntity<CartLine> updateQuantityProductInCart(@RequestBody CartLine cartLine){
-        orderCartService.updateQuantityProductInCart(cartLine);
+    @PutMapping("/updateQuantityProductInCart/{idUser}")
+    public ResponseEntity<CartLine> updateQuantityProductInCart(@RequestBody CartLine cartLine, @PathVariable int idUser){
+        orderCartService.updateQuantityProductInCart(cartLine, idUser);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

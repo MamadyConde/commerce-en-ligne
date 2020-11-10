@@ -13,6 +13,8 @@ public class CustomErrorDecoder implements ErrorDecoder {
         String dataUrl = s.split("#",2)[1];
         if (response.status() == 404 && dataUrl.equals("addProductInCart(ProductBean,int,int)")) {
             return new NotFoundException("Produit Insuffisant ");
+        } else if (response.status() == 404 && dataUrl.equals("updateQuantityProductInCart(CartLineBean,int)")) {
+            return new NotFoundException("La quantité du produit est insuffisante ");
         }
         return defaultErrorDecoder.decode(s,response);
     }

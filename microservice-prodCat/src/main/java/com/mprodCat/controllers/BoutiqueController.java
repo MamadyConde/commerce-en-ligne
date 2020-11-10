@@ -54,6 +54,7 @@ public class BoutiqueController {
     public List<Category> categoryList(){
         return boutiqueService.getAllCategories();
     }
+
     @GetMapping("/category/{idCategory}")
     public Category getOneCategory(@PathVariable int idCategory){
         return boutiqueService.getOneCategory(idCategory);

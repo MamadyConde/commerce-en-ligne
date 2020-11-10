@@ -10,12 +10,12 @@ import java.util.List;
 
 public interface IorderCartService {
     boolean addProductInCart(ProductBean productBean, int quantityOrder, int idUser);
-    void updateQuantityProductInCart(CartLine cartLine);
+    void updateQuantityProductInCart(CartLine cartLine, int idUser);
     void deleteProductInCart(int idProductBean, int idUser);
     List<Cart> listCartByUser(int idUser);
 
 
-    boolean saveOrder(List<Cart> cartList);// et saveOrderLine(CartLine cartLine); dans la même methode
+    boolean saveOrder(int idcart);// et saveOrderLine(CartLine cartLine); dans la même methode
     List<OrderInfo> listOrder();
     List<OrderInfo> listOrderByUser(int idUser);
     void updateOrder(List<OrderInfo> orderList);
