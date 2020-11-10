@@ -1,7 +1,11 @@
 package com.mPaiement.entity;
 
+import com.mPaiement.beans.CartLineBean;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -14,6 +18,7 @@ public class Payment {
     private Date datePayment=new Date();
     @Column(name = "TYPE_PAY",insertable = false, updatable = false)
     protected String typePay;
+    private int idCart;
 
     public Payment() {
     }
@@ -49,6 +54,14 @@ public class Payment {
 
     public String getTypePay() {
         return typePay;
+    }
+
+    public int getIdCart() {
+        return idCart;
+    }
+
+    public void setIdCart(int idCart) {
+        this.idCart = idCart;
     }
 
     @Override

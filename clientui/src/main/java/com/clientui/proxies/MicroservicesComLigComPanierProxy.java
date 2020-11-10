@@ -2,6 +2,7 @@ package com.clientui.proxies;
 
 import com.clientui.beans.CartBean;
 import com.clientui.beans.CartLineBean;
+import com.clientui.beans.OrderInfoBean;
 import com.clientui.beans.ProductBean;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +28,8 @@ public interface MicroservicesComLigComPanierProxy {
 
     @PutMapping("/updateQuantityProductInCart/{idUser}")
     ResponseEntity<CartLineBean> updateQuantityProductInCart(@RequestBody CartLineBean cartLine, @PathVariable int idUser);
+
+    @GetMapping("/OrdersByUser/{idUser}")
+    List<OrderInfoBean> listOrderByUser(@PathVariable int idUser);
 
 }

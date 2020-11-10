@@ -15,7 +15,7 @@ public interface IorderCartService {
     List<Cart> listCartByUser(int idUser);
 
 
-    boolean saveOrder(List<Cart> cartList);// et saveOrderLine(CartLine cartLine); dans la même methode
+    boolean saveOrder(int idcart);// et saveOrderLine(CartLine cartLine); dans la même methode
     List<OrderInfo> listOrder();
     List<OrderInfo> listOrderByUser(int idUser);
     void updateOrder(List<OrderInfo> orderList);

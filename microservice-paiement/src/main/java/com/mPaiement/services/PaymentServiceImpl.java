@@ -48,31 +48,24 @@ public class PaymentServiceImpl implements IpaymentService {
     }
 
     @Override
-    public Payment addCreditcartPayment(int idcart, CreditcartPayment creditcartPayment) {
+    public boolean addCreditcartPayment(int idcart, CreditcartPayment creditcartPayment) {
         if (creditcartPayment.getDateExpiration().compareTo(creditcartPayment.getdatePayment())<0){
             throw new PaymentNotFoundException("La carte de paiement a expiré depuis "+ creditcartPayment.getDateExpiration());
         }
         CartBean cart = microservicesComMigComPanier.getOneCart(idcart);
-        for (CartLineBean line: cart.getListCartLine()){
-            ProductBean product = microservicesProdCatProxy.getOneProduct(line.getIdProductBean());
-            int newQuantity = product.getQuantity() - line.getQuantity();
-            product.setQuantity(newQuantity);
-            microservicesProdCatProxy.updateProduct(line.getIdProductBean(),product);
-        }
-        Payment saveCreditcartPayment = paymentDao.save(creditcartPayment);
-        return saveCreditcartPayment;
+        creditcartPayment.setIdCart(idcart);
+        paymentDao.save(creditcartPayment);
+        microservicesComMigComPanier.saveOrder(idcart);
+        return true;
     }
+
     @Override
-    public Payment addPaypalPayment(int idcart, PaypalPayment paypalPayment) {
+    public boolean addPaypalPayment(int idcart, PaypalPayment paypalPayment) {
         CartBean cart = microservicesComMigComPanier.getOneCart(idcart);
-        for (CartLineBean line: cart.getListCartLine()){
-            ProductBean product = microservicesProdCatProxy.getOneProduct(line.getIdProductBean());
-            int newQuantity = product.getQuantity() - line.getQuantity();
-            product.setQuantity(newQuantity);
-            microservicesProdCatProxy.updateProduct(line.getIdProductBean(),product);
-        }
-        Payment savepaypalPayment = paymentDao.save(paypalPayment);
-        return savepaypalPayment;
+        paypalPayment.setIdCart(idcart);
+        paymentDao.save(paypalPayment);
+        microservicesComMigComPanier.saveOrder(idcart);
+        return true;
     }
 
     @Override

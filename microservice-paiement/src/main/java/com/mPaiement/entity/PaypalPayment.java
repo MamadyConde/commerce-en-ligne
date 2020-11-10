@@ -17,4 +17,12 @@ public class PaypalPayment extends Payment {
         super(amount, dateOrder);
         this.accountNumber = accountNumber;
     }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 }

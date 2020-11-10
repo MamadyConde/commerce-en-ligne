@@ -33,7 +33,6 @@ public class OrderCartServiceImpl implements IorderCartService {
     @Autowired
     private MicroserviceProductProxy microserviceProductProxy;
 
-    // Put product in cart
     @Override
     public boolean addProductInCart(ProductBean productBean, int quantityOrder, int idUser) {
         ProductBean getProduct = microserviceProductProxy.getOneProduct(productBean.getId());
@@ -60,9 +59,6 @@ public class OrderCartServiceImpl implements IorderCartService {
             newCart.setIdUser(idUser);
             cartDao.save(newCart);
             newCartLine.setCart(newCart);
-            int newQuantityProduct = getProduct.getQuantity() - quantityOrder;
-            getProduct.setQuantity(newQuantityProduct);
-            microserviceProductProxy.updateProduct(getProduct.getId(),getProduct);
             cartLineDao.save(newCartLine);
             return true;
         }
@@ -70,9 +66,6 @@ public class OrderCartServiceImpl implements IorderCartService {
         if (!getCartLine.isPresent()) throw new CartLineNotFoundException("le panier du produit "+productBean.getId()+" n'existe pas");
         int newQuantity = getCartLine.get().getQuantity() + quantityOrder;
         getCartLine.get().setQuantity(newQuantity);
-        int newQuantityProduct = getProduct.getQuantity() - quantityOrder;
-        getProduct.setQuantity(newQuantityProduct);
-        microserviceProductProxy.updateProduct(getProduct.getId(),getProduct);
         cartLineDao.save(getCartLine.get());
         return true;
     }
@@ -101,17 +94,14 @@ public class OrderCartServiceImpl implements IorderCartService {
                     if (getCartLine.get().getQuantity() > cartLine.getQuantity() ){
                          newQuantity = getCartLine.get().getQuantity() - cartLine.getQuantity();
                          newQuantityProduct = getProduct.getQuantity() + newQuantity;
+                         getProduct.setQuantity(newQuantityProduct);
                     } else {
                         newQuantity = cartLine.getQuantity() - getCartLine.get().getQuantity();
-                        newQuantityProduct = getProduct.getQuantity() - newQuantity;
+                        if(getProduct.getQuantity() < newQuantity) throw new CartLineNotFoundException("La quantité du produit "+idProduct+" est insuffisante");
                     }
-                    if (newQuantityProduct<0) throw new CartLineNotFoundException("La quantité du produit "+idProduct+" est insuffisante");
-                    getProduct.setQuantity(newQuantityProduct);
                     getCartLine.get().setQuantity(cartLine.getQuantity());
                     getCartLine.get().setAmount(cartLine.getAmount());
                     getCartLine.get().setQuantity(cartLine.getQuantity());
-
-
                     cartLineDao.save(getCartLine.get());
                     microserviceProductProxy.updateProduct(getProduct.getId(),getProduct);
                 }
@@ -143,27 +133,33 @@ public class OrderCartServiceImpl implements IorderCartService {
     }
 
     @Override
-    public boolean saveOrder(List<Cart> cartList) {
-        for (Cart cart:cartList ){
-            Optional<Cart> getCart = cartDao.findById(cart.getId());
+    public boolean saveOrder(int idCart) {
+            Optional<Cart> getCart = cartDao.findById(idCart);
             OrderInfo newOrder = new OrderInfo();
-            if (!getCart.isPresent()) throw new CartLineNotFoundException("Le panier avec l'id "+ cart.getId()+ "n'existe pas");
+            if (!getCart.isPresent()) throw new CartLineNotFoundException("Le panier avec l'id "+ getCart.get().getId()+ "n'existe pas");
             newOrder.setAmount(getCart.get().getAmountTotal());
             newOrder.setDateOrder(new Date());
-            newOrder.setIdUser(cart.getIdUser());
+            newOrder.setIdUser(getCart.get().getIdUser());
             orderDao.save(newOrder);
             List<CartLine> cartLines = getCart.get().getListCartLine();
+
+            for (int i =0; i< cartLines.size(); i++){
+                ProductBean getProduct = microserviceProductProxy.getOneProduct(getCart.get().getListCartLine().get(i).getIdProductBean());
+                int newQuantityProduct = getProduct.getQuantity() - getCart.get().getListCartLine().get(i).getQuantity();
+                getProduct.setQuantity(newQuantityProduct);
+                microserviceProductProxy.updateProduct(getProduct.getId(),getProduct);
+                cartLineDao.delete(cartLines.get(i));
+            }
             for (CartLine line: cartLines){
-                ProductBean getProduct = microserviceProductProxy.getOneProduct(line.getIdProductBean());
                 OrderLine newOrderLine = new OrderLine();
                 newOrderLine.setOrder(newOrder);
-                newOrderLine.setPrice(getProduct.getPrix());
+                newOrderLine.setPrice(line.getAmount());
                 newOrderLine.setQuantity(line.getQuantity());
                 newOrderLine.setIdProductBean(line.getIdProductBean());
                 orderLineDao.save(newOrderLine);
             }
-        }
-        return true;
+            cartDao.delete(getCart.get());
+    return true;
     }
 
     @Override
